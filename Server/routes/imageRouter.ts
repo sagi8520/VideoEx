@@ -4,7 +4,7 @@ const router = express();
 
 //ImageRouter
 router.post('/', (req: Request, res: Response) => {
-    res.send('Hello, Express!');
+    res.send('Hello, Express!')
 });
 
 router.post('/:id', (req: Request, res: Response) => {

@@ -11,13 +11,13 @@ dotenv_1.default.config();
 const port = process.env.PORT || 3000;
 // Create an Express application
 const app = (0, express_1.default)();
-//CustomerRouter
-app.get('/customer', (req, res) => {
+//userRouter
+app.get('/user', (req, res) => {
     res.send('Hello, Express!');
 });
-app.get('/customer/:id', (req, res) => {
-    const customerId = req.params.id;
-    res.status(200).json({ customerId });
+app.get('/user/:id', (req, res) => {
+    const userId = req.params.id;
+    res.status(200).json({ userId });
     return;
 });
 //ImageRouter
