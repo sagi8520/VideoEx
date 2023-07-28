@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
-import customerRouter from './customerRouter';
-import imageRouter from './imageRouter';
+import userRouter from './user/user.router';
+import imageRouter from './media/media.router';
 
 const router = express();
 
-router.use('/customer', customerRouter);
+router.use('/user', userRouter);
 router.use('/image', imageRouter);
 
 
