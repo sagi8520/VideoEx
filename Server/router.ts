@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
-import userRouter from './userRouter';
-import imageRouter from './imageRouter';
+import userRouter from './user/user.router';
+import imageRouter from './media/media.router';
 
 const router = express();
 
