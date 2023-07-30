@@ -2,9 +2,9 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import appRouter from './router';
-import { applicationErrorHandler, userErrorHandler } from './middlewares/errors/errorHandler';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
+import { applicationErrorHandler, userErrorHandler } from './middlewares/errors/errorHandler';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -13,9 +13,10 @@ dotenv.config();
 const port = process.env.PORT || 3000;
 const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/mydb";
 
-mongoose.connect(mongoURI, {
-}).then(() => console.log('connected to db'))
-    .catch((err) => console.log(err));
+(async () => {
+    mongoose.connect(mongoURI)
+})
+console.log('connected to db');
 
 // Create an Express application
 const app = express();
