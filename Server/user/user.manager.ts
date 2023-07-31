@@ -1,10 +1,27 @@
 import { Request, Response } from 'express';
 import logger from '../utils/logger';
-import { EmailExistsError, UserNotExistsError, UsernameExistsError } from '../middlewares/errors/userError';
+import { EmailExistsError, UserNotExistsError, UsernameExistsError, UnAuthorizedUserError } from '../middlewares/errors/userError';
 import { IUser } from './user.interface';
 import userRepository from './user.repository';
 
 export default class UserManager {
+    static async validateUserCredit(userName: string, password: string) {
+        const userValidated: boolean = await userRepository.validateUserCredit(userName, password);
+        return userValidated;
+    }
+    static async isUserValidated(loggedInUserId: string, userIdRequsted: string) {
+        return (loggedInUserId === userIdRequsted);
+    }
+
+    static async grantAccessToken(userName: string, accessToken: string) {
+        logger.info(`updating access token in DB: userName: ${userName}`)
+        return userRepository.updateUser({ userName }, { accessToken });
+    }
+
+    static async getUserByToken(accessToken: string) {
+        logger.info(`getUserByToken`);
+        return userRepository.getByToken(accessToken);
+    }
 
     static async getUserById(userId: string) {
         const userExists: boolean = await userRepository.isUserExists(userId);
@@ -13,7 +30,13 @@ export default class UserManager {
         return userRepository.getById(userId);
     }
 
-    static async updateUser(userIdToUpdate: string, updatedUser: IUser) {
+    static async updateUser(userIdToUpdate: string, updatedUser: IUser, requestedUser?: IUser) {
+        if (!requestedUser || !requestedUser._id)
+            throw new UnAuthorizedUserError();
+        const userValid = await UserManager.isUserValidated(requestedUser._id, userIdToUpdate);
+        if (!userValid)
+            throw new UnAuthorizedUserError();
+
         const currUser = await UserManager.getUserById(userIdToUpdate);
         if (!currUser)
             throw new UserNotExistsError();
@@ -26,7 +49,7 @@ export default class UserManager {
         if (emailExists && updatedUser.email !== currUser.email)
             throw new EmailExistsError;
 
-        return userRepository.updateUser(userIdToUpdate, updatedUser);
+        return userRepository.updateUser({ _id: userIdToUpdate }, updatedUser);
     }
 
     static async addUser(userToAdd: IUser) {
@@ -37,7 +60,6 @@ export default class UserManager {
         const emailExists: boolean = await UserManager.isEmailExists(userToAdd.email);
         if (emailExists)
             throw new EmailExistsError;
-
         return userRepository.addUser(userToAdd);
     }
 
@@ -58,16 +80,3 @@ export default class UserManager {
         return exists;
     }
 }
-
-    // private static async isUserExists(userId: string) {
-    //     const user = await UserManager.getUserById(userId);
-    //     if (!user)
-    //         throw UserNotExistsError;
-
-    //     const userNameExists: boolean = await UserManager.isUsernameExists(user.userName);
-    //     if (!userNameExists)
-    //         throw new UsernameExistsError;
-    //     const emailExists: boolean = await UserManager.isEmailExists(user.email);
-    //     if (!emailExists)
-    //         throw new EmailExistsError;
-    // }

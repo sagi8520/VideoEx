@@ -14,6 +14,10 @@ const UserSchema: mongoose.Schema = new mongoose.Schema({
         type: String,
         required: true,
         lowercase: true
+    },
+    accessToken: {
+        type: String,
+        required: true,
     }
 });
 

@@ -30,3 +30,13 @@ export class UserNotExistsError extends UserError {
         super(message || 'User id not found', 404);
     }
 }
+export class UnAuthorizedUserError extends UserError {
+    constructor(message?: string) {
+        super(message || 'Authorization error, user is not authorized', 403);
+    }
+}
+export class AuthorizationFailError extends UserError {
+    constructor(message?: string) {
+        super(message || 'Authorization failed, username or password is wrong.', 401);
+    }
+}
